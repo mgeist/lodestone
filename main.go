@@ -1,21 +1,16 @@
 package lodestone
 
 import (
-	"io/ioutil"
 	"log"
 	"net/http"
 )
 
-type callback func([]byte)
+type callback func(*http.Request)
 
 var hooks = make(map[string]callback)
 
 func handler(w http.ResponseWriter, r *http.Request) {
-	body, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		log.Fatal(err)
-	}
-	hooks[r.URL.Path](body)
+	hooks[r.URL.Path](r)
 }
 
 func RegisterEndpoint(endpoint string, fn callback) {
